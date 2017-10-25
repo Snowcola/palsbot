@@ -12,7 +12,7 @@ PALS_CHANNEL = os.environ.get("PALS_CHANNEL")
 AT_BOT = "<@" + BOT_ID + ">"
 EXAMPLE_COMMAND = "do"
 CITY = 'Edmonton'
-WEATHER_CHECK = "is it snowing?"
+WEATHER_CHECK = "weather"
 
 # instantiate Slack & Twilio clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
@@ -25,13 +25,17 @@ def handle_command(command, channel):
         are valid commands. If so, then acts on the commands. If not,
         returns back what it needs for clarification.
     """
-    response = "Not sure what you mean. Use the *" + EXAMPLE_COMMAND + \
-               "* command with numbers, delimited by spaces."
+    response = "Check the weather: " + WEATHER_CHECK + " to @  palsbot"
+
     if command.startswith(EXAMPLE_COMMAND):
         response = "Sure...write some more code then I can do that!"
     if command.startswith(WEATHER_CHECK):
-        condition = get_weather()
-        response  = "It's " + condition + " right now, not quite time for movie night :("
+        condition = get_weather(CITY)
+        if check_for_snow(CITY):
+            reponse = "IT'S SNOWING LETS GET OUR MOVIE ON!!!!!"
+        else:
+            response  = "It's " + condition + " right now, not quite time for movie night :("
+        
 
     slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
@@ -47,7 +51,7 @@ def check_for_snow(location):
 
 def snow_message(location, channel):
     if check_for_snow(location):
-        reponse = "IS SNOWING LETS GET OUR MOVIE ON!!!!!"
+        reponse = "IT'S SNOWING LETS GET OUR MOVIE ON!!!!!"
         slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
 

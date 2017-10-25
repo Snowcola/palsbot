@@ -6,6 +6,7 @@ BOT_NAME = 'palsbot'
 
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 print(os.environ.get('BOT_ID'))
+print(os.environ.get('SLACK_BOT_TOKEN'))
 if __name__ == "__main__":
     api_call = slack_client.api_call("users.list")
     if api_call.get('ok'):
